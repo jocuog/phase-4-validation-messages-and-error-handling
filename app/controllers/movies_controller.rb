@@ -7,8 +7,12 @@ class MoviesController < ApplicationController
   end
 
   def create
-    movie = Movie.create(movie_params)
-    render json: movie, status: :created
+    begin 
+      movie = Movie.create!(movie_params)
+      render json: movie, status: :created
+    rescue ActiveRecord::RecordInvalid => e
+      render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   private
@@ -17,4 +21,6 @@ class MoviesController < ApplicationController
     params.permit(:title, :year, :length, :director, :description, :poster_url, :category, :discount, :female_director)
   end
   
+
+
 end
